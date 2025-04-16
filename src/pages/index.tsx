@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Project from "@site/src/components/Project";
+import { Analytics } from "@vercel/analytics/react"
 
 // 定义 CSS 动画
 const fadeInAnimation = `
@@ -93,6 +94,7 @@ export default function Home(): ReactNode {
           </div>
         </div>
       </main>
+      <Analytics />
     </Layout>
   );
 }
