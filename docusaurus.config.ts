@@ -5,6 +5,12 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
+  metadata: [
+    {
+      name: 'google-adsense-account',
+      content: 'ca-pub-7006111376650963',
+    },
+  ],
   title: 'PISM开源',
   tagline: 'Plan Implement Simplify Simplify',
   favicon: 'img/favicon.ico',
