@@ -91,7 +91,12 @@ const config: Config = {
         alt: 'PISM Logo',
         src: 'img/pism.svg',
       },
-      items: [],
+      items: [{
+        type: "docSidebar",
+        position: 'left',
+        sidebarId: 'tools',
+        label: '工具'
+      }],
     },
     footer: {
       style: 'light',
