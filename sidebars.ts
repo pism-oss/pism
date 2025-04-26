@@ -19,6 +19,14 @@ const sidebars: SidebarsConfig = {
   tools: [{
     type: 'category',
     label: 'ID在线生成',
+    link: {
+      type: 'generated-index',
+      title: 'ID在线生成',
+      description:
+        "一些常用的id生成器",
+      keywords: ['id','uuid','snowflake'],
+      slug:'/id_gen'
+    },
     items: [
       'tools/id_generator/uuid',
       'tools/id_generator/nanoid',

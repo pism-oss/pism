@@ -4,6 +4,9 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Project from "@site/src/components/Project";
 import { Analytics } from "@vercel/analytics/react"
+import {Box, Button} from "@mui/material";
+import Translate from "@docusaurus/Translate";
+import Link from "@docusaurus/Link";
 
 // 定义 CSS 动画
 const fadeInAnimation = `
@@ -50,6 +53,7 @@ export default function Home(): ReactNode {
       <main>
         <div className="row" style={{margin: '0em'}}>
           <div className={clsx('col col--6')}>
+
             <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
               {words.map((word, index) => (
                 <h1
@@ -63,6 +67,10 @@ export default function Home(): ReactNode {
                   {word}
                 </h1>
               ))}
+              <Link
+                to="/docs/id_gen">
+                <Button variant="contained">在线工具</Button>
+              </Link>
             </div>
           </div>
           <div className={clsx('col col--6')} style={{padding: '2em'}}>
