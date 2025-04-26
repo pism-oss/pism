@@ -22,6 +22,7 @@ const sidebars: SidebarsConfig = {
     items:[
       'tools/id_generator/uuid',
       'tools/id_generator/nanoid',
+      'tools/id_generator/snowflakeid',
     ]
   }]
 
