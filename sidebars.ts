@@ -24,7 +24,12 @@ const sidebars: SidebarsConfig = {
       'tools/id_generator/nanoid',
       'tools/id_generator/snowflakeid',
     ]
-  }]
+  },
+    {
+      type: 'doc',
+      label:'随机秘密生成器',
+      id:'tools/password_generator/password_generator'
+    }]
 
   // But you can create a sidebar manually
   /*
