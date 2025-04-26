@@ -42,24 +42,24 @@ export default function RandomPasswordGenerator() {
     return customCharset.trim() === '' ? defaultCharset : customCharset;
   };
 
-  // 计算破解时间 (秒)
+
   const calculateCrackTime = (password: string) => {
-    let availableCharset = 'abcdefghijklmnopqrstuvwxyz';
+    let availableCharset = 'abcdefghijklmnopqrstuvwxyz'; // 默认小写字母
 
-    if (uppercase) availableCharset += getValidCharset(customUppercase, defaultUppercase);
-    if (numbers) availableCharset += getValidCharset(customNumbers, defaultNumbers);
-    if (symbols) availableCharset += getValidCharset(customSymbols, defaultSymbols);
+    // 检查密码字符集
+    const length = password.length;
 
-    // 排除不需要的字符
-    const filteredCharset = availableCharset.replace(new RegExp(`[${excludeChars}]`, 'g'), '');
-    const charsetSize = filteredCharset.length;
-    const passwordLength = password.length;
+    if (/[A-Z]/.test(password)) availableCharset += defaultUppercase; // 如果包含大写字母
+    if (/\d/.test(password)) availableCharset += defaultNumbers; // 如果包含数字
+    if (/[^a-zA-Z0-9]/.test(password)) availableCharset += defaultSymbols; // 如果包含符号
+
+    const charsetSize = availableCharset.length;
 
     // 假设每秒尝试 10 亿次
     const attemptsPerSecond = 1e9;
 
     // 计算总的密码空间
-    const totalCombinations = Math.pow(charsetSize, passwordLength);
+    const totalCombinations = Math.pow(charsetSize, length);
 
     // 计算破解时间（秒）
     const timeInSeconds = totalCombinations / attemptsPerSecond;
@@ -82,7 +82,6 @@ export default function RandomPasswordGenerator() {
       totalSeconds: timeInSeconds, // 返回总秒数
     };
   };
-
 // 获取密码复杂度的颜色
   const getPasswordComplexityColor = (crackTime: {
     totalSeconds: number,
