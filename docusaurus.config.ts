@@ -46,6 +46,13 @@ const config: Config = {
         src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7006111376650963',
         crossorigin: 'anonymous'
       }
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'baidu_union_verify',
+        content: 'a3328efdd27229dc4fef6baf78bdd6a8'
+      }
     }
   ],
 
