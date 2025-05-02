@@ -85,17 +85,17 @@ export default function Home(): ReactNode {
                   {word}
                 </h1>
               ))}
-              <Link
-                to="/docs/id_gen">
-                <Button variant="contained"><Translate>全部在线工具</Translate></Button>
-              </Link>
             </div>
           </Grid>
           <Grid size={{xs: 12, md: 6, lg: 8}}>
 
             <Stack spacing={6} style={{margin: "10px"}}>
+              <Link
+                to="/docs/id_gen">
+                <Button variant="contained"><Translate>全部在线工具</Translate></Button>
+              </Link>
               {indexCard.map(cardGroup => {
-                return (<Grid rowSpacing={2}>
+                return (<Grid key={cardGroup.id} rowSpacing={2}>
                   <Typography variant="h5" component="div">
                     <b>{cardGroup.name}</b>
                   </Typography>
@@ -106,12 +106,13 @@ export default function Home(): ReactNode {
 
                     {cardGroup.cards.map(card => {
                       return (<Grid
+                        key={card.id}
                         size={{xs: 12, md: 6, lg: 3}}>
                         <div
                           aria-owns={Boolean(anchorEl[card.id]) ? 'mouse-over-popover' : undefined}
                           aria-haspopup="true"
-                          onMouseEnter={(e) => handlePopoverOpen(e, card.id)}
-                          onMouseLeave={(e) => handlePopoverClose(card.id)}
+                          // onMouseEnter={(e) => handlePopoverOpen(e, card.id)}
+                          // onMouseLeave={(e) => handlePopoverClose(card.id)}
                         >
                           <CardInfo
                             item={{
@@ -126,6 +127,7 @@ export default function Home(): ReactNode {
                         </div>
 
                         <Popover
+                          key={card.id}
                           id={card.id}
                           sx={{pointerEvents: 'none'}}
                           open={Boolean(anchorEl[card.id])}

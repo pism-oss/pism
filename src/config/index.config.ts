@@ -16,12 +16,14 @@ export type Card = {
 }
 
 export type CardGroup = {
+  id: string,
   name: string,
   desc?: string,
   cards: Card[]
 }
 
 export const indexCard: CardGroup[] = [{
+  id: 'id_gen',
   name: translate({message: '在线id生成器'}),
   desc: translate({message: '在线批量生成id'}),
   cards: [
@@ -46,6 +48,7 @@ export const indexCard: CardGroup[] = [{
     }
   ]
 }, {
+  id: 'password',
   name: translate({message: '加密'}),
   cards: [
     {

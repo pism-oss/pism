@@ -96,7 +96,7 @@ const config: Config = {
         type: "docSidebar",
         position: 'left',
         sidebarId: 'tools',
-        label: '工具'
+        label: '在线工具'
       }, {
         type: 'localeDropdown',
         position: 'left',
@@ -110,10 +110,10 @@ const config: Config = {
         <a href="https://beian.miit.gov.cn/">蜀ICP备19017495号-1</a>
 `,
     },
-    colorMode:{
+    colorMode: {
       defaultMode: 'light',
-      disableSwitch: false,
-      respectPrefersColorScheme: false,
+      disableSwitch: true,
+      respectPrefersColorScheme: true,
     },
     prism: {
       theme: prismThemes.github,
