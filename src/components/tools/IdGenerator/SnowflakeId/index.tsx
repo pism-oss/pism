@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Button,
@@ -11,7 +11,8 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Snowflake } from '@sapphire/snowflake';
+import {Snowflake} from '@sapphire/snowflake';
+import Translate, {translate} from "@docusaurus/Translate";
 
 export default function SnowflakePage() {
   const [nanoidList, setNanoIDList] = useState<string[]>([]);
@@ -49,11 +50,11 @@ export default function SnowflakePage() {
     try {
       await navigator.clipboard.writeText(nanoID);
       setSnackbarSeverity('success');
-      setSnackbarMessage('Snowflake 复制成功！');
+      setSnackbarMessage(translate({message: 'Snowflake 复制成功！'}));
     } catch (error) {
       console.error('复制失败:', error);
       setSnackbarSeverity('error');
-      setSnackbarMessage('复制失败，请重试。');
+      setSnackbarMessage(translate({message: '复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -63,11 +64,11 @@ export default function SnowflakePage() {
     try {
       await navigator.clipboard.writeText(nanoidList.join('\n'));
       setSnackbarSeverity('success');
-      setSnackbarMessage('所有 Snowflake 复制成功！');
+      setSnackbarMessage(translate({message: '所有 Snowflake 复制成功！'}));
     } catch (error) {
       console.error('批量复制失败:', error);
       setSnackbarSeverity('error');
-      setSnackbarMessage('批量复制失败，请重试。');
+      setSnackbarMessage(translate({message: '批量复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -78,7 +79,7 @@ export default function SnowflakePage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ padding: 4 }}>
+    <Container maxWidth="lg" sx={{padding: 4}}>
       <Grid container spacing={2}>
         <Grid size={{xs: 12, md: 6, lg: 4}}>
           {/* Snackbar for copy success or error */}
@@ -86,30 +87,30 @@ export default function SnowflakePage() {
             open={snackbarOpen}
             autoHideDuration={3000}
             onClose={() => setSnackbarOpen(false)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
           >
             <Alert
               onClose={() => setSnackbarOpen(false)}
               severity={snackbarSeverity}
-              sx={{ width: '100%' }}
+              sx={{width: '100%'}}
             >
               {snackbarMessage}
             </Alert>
           </Snackbar>
 
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4 }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4}}>
             <Typography variant="h6" gutterBottom>
-              Snowflake 配置
+              <Translate>Snowflake 配置</Translate>
             </Typography>
 
             {/* Epoch Input */}
             <TextField
               value={epoch}
               onChange={(e) => setEpoch(e.target.value)}
-              label="Epoch 时间"
+              label={translate({message: "Epoch 时间"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Worker ID Input */}
@@ -120,7 +121,7 @@ export default function SnowflakePage() {
               label="Worker ID"
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Process ID Input */}
@@ -131,7 +132,7 @@ export default function SnowflakePage() {
               label="Process ID"
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Count Input */}
@@ -139,29 +140,31 @@ export default function SnowflakePage() {
               type="number"
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              label="生成个数"
+              label={translate({message: "生成个数"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Generate Button */}
             <Button variant="contained" color="primary" fullWidth onClick={handleGenerate}>
-              生成 Snowflakes
+              <Translate>
+                生成 Snowflakes
+              </Translate>
             </Button>
           </Box>
         </Grid>
         <Grid size={{xs: 12, md: 6, lg: 8}}>
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px'}}>
             {/* Batch Copy Button */}
             <Button
               variant="outlined"
               color="secondary"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
               fullWidth
               onClick={copyAllToClipboard}
             >
-              批量复制所有 Snowflake
+              <Translate>批量复制所有 Snowflake</Translate>
             </Button>
 
             {/* Display Snowflakes List */}
@@ -183,15 +186,15 @@ export default function SnowflakePage() {
                     variant="outlined"
                     onClick={() => copyToClipboard(nanoID)}
                     InputProps={{
-                      style: { cursor: 'pointer' },
+                      style: {cursor: 'pointer'},
                     }}
                   />
                   <Button
                     variant="outlined"
                     onClick={() => copyToClipboard(nanoID)}
-                    sx={{ marginLeft: 2 }}
+                    sx={{marginLeft: 2}}
                   >
-                    复制
+                    <Translate>复制</Translate>
                   </Button>
                 </Box>
               ))}

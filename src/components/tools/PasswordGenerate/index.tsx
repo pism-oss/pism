@@ -12,6 +12,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import Translate, {translate} from "@docusaurus/Translate";
 
 export default function RandomPasswordGenerator() {
   const defaultUppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -173,10 +174,10 @@ export default function RandomPasswordGenerator() {
     try {
       await navigator.clipboard.writeText(password);
       setSnackbarSeverity('success');
-      setSnackbarMessage('密码复制成功！');
+      setSnackbarMessage(translate({message: '密码复制成功！'}));
     } catch (error) {
       setSnackbarSeverity('error');
-      setSnackbarMessage('复制失败，请重试。');
+      setSnackbarMessage(translate({message: '复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -186,10 +187,10 @@ export default function RandomPasswordGenerator() {
     try {
       await navigator.clipboard.writeText(passwordList.join('\n'));
       setSnackbarSeverity('success');
-      setSnackbarMessage('所有密码复制成功！');
+      setSnackbarMessage(translate({message: '所有密码复制成功！'}));
     } catch (error) {
       setSnackbarSeverity('error');
-      setSnackbarMessage('批量复制失败，请重试。');
+      setSnackbarMessage(translate({message: '批量复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -220,14 +221,14 @@ export default function RandomPasswordGenerator() {
 
           <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4}}>
             <Typography variant="h6" gutterBottom>
-              随机密码生成配置
+              <Translate>随机密码生成配置</Translate>
             </Typography>
 
             <TextField
               type="number"
               value={length}
               onChange={(e) => setLength(Number(e.target.value))}
-              label="密码长度"
+              label={translate({message: "密码长度"})}
               fullWidth
               variant="outlined"
               sx={{marginBottom: 2}}
@@ -235,13 +236,13 @@ export default function RandomPasswordGenerator() {
 
             <FormControlLabel
               control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)}/>}
-              label="包含大写字母"
+              label={translate({message: "包含大写字母"})}
             />
             {uppercase && (
               <TextField
                 value={customUppercase}
                 onChange={(e) => setCustomUppercase(e.target.value)}
-                label="自定义大写字母"
+                label={translate({message: "自定义大写字母"})}
                 fullWidth
                 variant="outlined"
                 sx={{marginBottom: 2}}
@@ -250,13 +251,13 @@ export default function RandomPasswordGenerator() {
 
             <FormControlLabel
               control={<Checkbox checked={numbers} onChange={() => setNumbers(!numbers)}/>}
-              label="包含数字"
+              label={translate({message: "包含数字"})}
             />
             {numbers && (
               <TextField
                 value={customNumbers}
                 onChange={(e) => setCustomNumbers(e.target.value)}
-                label="自定义数字"
+                label={translate({message: "自定义数字"})}
                 fullWidth
                 variant="outlined"
                 sx={{marginBottom: 2}}
@@ -265,13 +266,13 @@ export default function RandomPasswordGenerator() {
 
             <FormControlLabel
               control={<Checkbox checked={symbols} onChange={() => setSymbols(!symbols)}/>}
-              label="包含特殊字符"
+              label={translate({message: "包含特殊字符"})}
             />
             {symbols && (
               <TextField
                 value={customSymbols}
                 onChange={(e) => setCustomSymbols(e.target.value)}
-                label="自定义特殊字符"
+                label={translate({message: "自定义特殊字符"})}
                 fullWidth
                 variant="outlined"
                 sx={{marginBottom: 2}}
@@ -280,13 +281,13 @@ export default function RandomPasswordGenerator() {
 
             <FormControlLabel
               control={<Checkbox checked={notRep} onChange={() => setNotRep(!notRep)}/>}
-              label="字符不重复"
+              label={translate({message: "字符不重复"})}
             />
 
             <TextField
               value={excludeChars}
               onChange={(e) => setExcludeChars(e.target.value)}
-              label="排除字符"
+              label={translate({message: "排除字符"})}
               fullWidth
               variant="outlined"
               sx={{marginBottom: 2}}
@@ -296,14 +297,14 @@ export default function RandomPasswordGenerator() {
               type="number"
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              label="生成个数"
+              label={translate({message: "生成个数"})}
               fullWidth
               variant="outlined"
               sx={{marginBottom: 2}}
             />
 
             <Button variant="contained" color="primary" fullWidth onClick={handleGenerate}>
-              生成密码
+              <Translate>生成密码</Translate>
             </Button>
           </Box>
         </Grid>
@@ -317,7 +318,7 @@ export default function RandomPasswordGenerator() {
               fullWidth
               onClick={copyAllToClipboard}
             >
-              批量复制所有密码
+              <Translate>批量复制所有密码</Translate>
             </Button>
 
             <Stack spacing={2}>
@@ -355,13 +356,13 @@ export default function RandomPasswordGenerator() {
                         onClick={() => copyToClipboard(password)}
                         sx={{marginLeft: 2}}
                       >
-                        复制
+                        <Translate>复制</Translate>
                       </Button>
                     </Box>
                     <Box>
                       <Typography variant="body2"
                                   sx={{color: complexityColor === 'error' ? '#d32f2f' : complexityColor === 'warn' ? '#fbc02d' : '#388e3c'}}>
-                        破解时间: {formattedTime}
+                        <Translate>破解时间</Translate>: {formattedTime}
                       </Typography>
                     </Box>
                   </>

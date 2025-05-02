@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Button,
@@ -16,8 +16,8 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import { customAlphabet, nanoid } from 'nanoid';
-import Translate from "@docusaurus/Translate";
+import {customAlphabet, nanoid} from 'nanoid';
+import Translate, {translate} from "@docusaurus/Translate";
 import DocCard from "@theme/DocCard";
 
 export default function NanoID() {
@@ -55,11 +55,11 @@ export default function NanoID() {
     try {
       await navigator.clipboard.writeText(nanoID);
       setSnackbarSeverity('success');
-      setSnackbarMessage('NanoID 复制成功！');
+      setSnackbarMessage(translate({message: 'NanoID 复制成功！'}));
     } catch (error) {
-      console.error('复制失败:', error);
+      console.error(translate({message: '复制失败:'}), error);
       setSnackbarSeverity('error');
-      setSnackbarMessage('复制失败，请重试。');
+      setSnackbarMessage(translate({message: '复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -69,11 +69,11 @@ export default function NanoID() {
     try {
       await navigator.clipboard.writeText(nanoidList.join('\n'));
       setSnackbarSeverity('success');
-      setSnackbarMessage('所有 NanoID 复制成功！');
+      setSnackbarMessage(translate({message: '所有 NanoID 复制成功！'}));
     } catch (error) {
-      console.error('批量复制失败:', error);
+      console.error(translate({message: '批量复制失败:'}), error);
       setSnackbarSeverity('error');
-      setSnackbarMessage('批量复制失败，请重试。');
+      setSnackbarMessage(translate({message: '批量复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -84,7 +84,7 @@ export default function NanoID() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ padding: 4 }}>
+    <Container maxWidth="lg" sx={{padding: 4}}>
       <Grid container spacing={2}>
         <Grid size={{xs: 12, md: 6, lg: 4}}>
           {/* Snackbar for copy success or error */}
@@ -92,18 +92,18 @@ export default function NanoID() {
             open={snackbarOpen}
             autoHideDuration={3000}
             onClose={() => setSnackbarOpen(false)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
           >
             <Alert
               onClose={() => setSnackbarOpen(false)}
               severity={snackbarSeverity}
-              sx={{ width: '100%' }}
+              sx={{width: '100%'}}
             >
               {snackbarMessage}
             </Alert>
           </Snackbar>
 
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4 }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4}}>
             <Typography variant="h6" gutterBottom>
               <Translate>
                 NanoID 配置
@@ -114,10 +114,10 @@ export default function NanoID() {
             <TextField
               value={customAlphabetStr}
               onChange={(e) => setCustomAlphabetStr(e.target.value)}
-              label="自定义字符集"
+              label={translate({message: "自定义字符集"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Length Input */}
@@ -125,15 +125,15 @@ export default function NanoID() {
               type="number"
               value={length}
               onChange={(e) => setLength(Number(e.target.value))}
-              label="ID 长度"
+              label={translate({message: "ID 长度"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Uppercase Checkbox */}
             <FormControlLabel
-              control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)} />}
+              control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)}/>}
               label="转为大写"
             />
 
@@ -142,29 +142,31 @@ export default function NanoID() {
               type="number"
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              label="生成个数"
+              label={translate({message: "生成个数"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Generate Button */}
             <Button variant="contained" color="primary" fullWidth onClick={handleGenerate}>
-              生成 NanoIDs
+              <Translate>生成 NanoIDs</Translate>
             </Button>
           </Box>
         </Grid>
         <Grid size={{xs: 12, md: 6, lg: 8}}>
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px'}}>
             {/* Batch Copy Button */}
             <Button
               variant="outlined"
               color="secondary"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
               fullWidth
               onClick={copyAllToClipboard}
             >
-              批量复制所有 NanoID
+              <Translate>
+                批量复制所有 NanoID
+              </Translate>
             </Button>
 
             {/* Display NanoIDs List */}
@@ -185,15 +187,17 @@ export default function NanoID() {
                     variant="outlined"
                     onClick={() => copyToClipboard(nanoID)}
                     InputProps={{
-                      style: { cursor: 'pointer' }
+                      style: {cursor: 'pointer'}
                     }}
                   />
                   <Button
                     variant="outlined"
                     onClick={() => copyToClipboard(nanoID)}
-                    sx={{ marginLeft: 2 }}
+                    sx={{marginLeft: 2}}
                   >
-                    复制
+                    <Translate>
+                      复制
+                    </Translate>
                   </Button>
                 </Box>
               ))}

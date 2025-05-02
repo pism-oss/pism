@@ -1,6 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Container, Grid, Typography, FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel, Stack, Snackbar, Alert } from '@mui/material';
-import { v4 as uuidv4, v1 as uuidv1 } from 'uuid';
+import React, {useState, useEffect} from 'react';
+import {
+  Box,
+  Button,
+  TextField,
+  Container,
+  Grid,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  Snackbar,
+  Alert
+} from '@mui/material';
+import {v4 as uuidv4, v1 as uuidv1} from 'uuid';
+import Translate, {translate} from "@docusaurus/Translate";
 
 export default function UUID() {
   const [uuidList, setUuidList] = useState<string[]>([]);
@@ -41,10 +58,10 @@ export default function UUID() {
     try {
       await navigator.clipboard.writeText(uuid);
       setSnackbarSeverity('success');
-      setSnackbarMessage('UUID 复制成功！');
+      setSnackbarMessage(translate({message: 'UUID 复制成功！'}));
     } catch (error) {
       setSnackbarSeverity('error');
-      setSnackbarMessage('复制失败，请重试。');
+      setSnackbarMessage(translate({message: '复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -54,10 +71,10 @@ export default function UUID() {
     try {
       await navigator.clipboard.writeText(uuidList.join('\n'));
       setSnackbarSeverity('success');
-      setSnackbarMessage('所有 UUID 复制成功！');
+      setSnackbarMessage(translate({message: '所有 UUID 复制成功！'}));
     } catch (error) {
       setSnackbarSeverity('error');
-      setSnackbarMessage('批量复制失败，请重试。');
+      setSnackbarMessage(translate({message: '批量复制失败，请重试。'}));
     } finally {
       setSnackbarOpen(true);
     }
@@ -68,7 +85,7 @@ export default function UUID() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ padding: 4 }}>
+    <Container maxWidth="lg" sx={{padding: 4}}>
       <Grid container spacing={2}>
         <Grid size={{xs: 12, md: 6, lg: 4}}>
           {/* Snackbar for copy success or error */}
@@ -76,41 +93,41 @@ export default function UUID() {
             open={snackbarOpen}
             autoHideDuration={3000}
             onClose={() => setSnackbarOpen(false)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
           >
-            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{width: '100%'}}>
               {snackbarMessage}
             </Alert>
           </Snackbar>
 
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4 }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4}}>
             <Typography variant="h6" gutterBottom>
-              UUID 配置
+              <Translate>UUID 配置</Translate>
             </Typography>
 
             {/* UUID Version */}
-            <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <InputLabel>UUID 版本</InputLabel>
+            <FormControl fullWidth sx={{marginBottom: 2}}>
+              <InputLabel><Translate>UUID 版本</Translate></InputLabel>
               <Select
                 value={uuidVersion}
                 onChange={(e) => setUuidVersion(e.target.value)}
-                label="UUID 版本"
+                label={translate({message: "UUID 版本"})}
               >
-                <MenuItem value="v4">v4 (随机生成)</MenuItem>
-                <MenuItem value="v1">v1 (基于时间戳)</MenuItem>
+                <MenuItem value="v4"><Translate>v4 (随机生成)</Translate></MenuItem>
+                <MenuItem value="v1"><Translate>v1 (基于时间戳)</Translate></MenuItem>
               </Select>
             </FormControl>
 
             {/* Uppercase Checkbox */}
             <FormControlLabel
-              control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)} />}
-              label="转为大写"
+              control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)}/>}
+              label={translate({message: "转为大写"})}
             />
 
             {/* Remove Hyphens Checkbox */}
             <FormControlLabel
-              control={<Checkbox checked={removeHyphens} onChange={() => setRemoveHyphens(!removeHyphens)} />}
-              label="删除连接符"
+              control={<Checkbox checked={removeHyphens} onChange={() => setRemoveHyphens(!removeHyphens)}/>}
+              label={translate({message: "删除连接符"})}
             />
 
             {/* Count Input */}
@@ -118,50 +135,55 @@ export default function UUID() {
               type="number"
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              label="生成个数"
+              label={translate({message: "生成个数"})}
               fullWidth
               variant="outlined"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
             />
 
             {/* Generate Button */}
             <Button variant="contained" color="primary" fullWidth onClick={handleGenerate}>
-              生成 UUIDs
+              <Translate>生成 UUIDs</Translate>
             </Button>
           </Box>
         </Grid>
         <Grid size={{xs: 12, md: 6, lg: 8}}>
-          <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
+          <Box sx={{padding: 2, border: '1px solid #ddd', borderRadius: '8px'}}>
             {/* Batch Copy Button */}
             <Button
               variant="outlined"
               color="secondary"
-              sx={{ marginBottom: 2 }}
+              sx={{marginBottom: 2}}
               fullWidth
               onClick={copyAllToClipboard}
             >
-              批量复制所有 UUID
+              <Translate>批量复制所有 UUID</Translate>
             </Button>
 
             {/* Display UUIDs List */}
             <Stack spacing={2}>
               {uuidList.map((uuid, index) => (
-                <Box key={index} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box key={index} sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
                   <TextField
                     value={uuid}
                     fullWidth
                     variant="outlined"
                     onClick={() => copyToClipboard(uuid)}
                     InputProps={{
-                      style: { cursor: 'pointer' },
+                      style: {cursor: 'pointer'},
                     }}
                   />
                   <Button
                     variant="outlined"
                     onClick={() => copyToClipboard(uuid)}
-                    sx={{ marginLeft: 2 }}
+                    sx={{marginLeft: 2}}
                   >
-                    复制
+                    <Translate>复制</Translate>
                   </Button>
                 </Box>
               ))}
@@ -169,9 +191,6 @@ export default function UUID() {
           </Box>
         </Grid>
       </Grid>
-
-
-
 
 
     </Container>

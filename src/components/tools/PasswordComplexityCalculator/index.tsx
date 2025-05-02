@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Stack, Alert } from '@mui/material';
+import React, {useState} from 'react';
+import {TextField, Button, Box, Typography, Stack, Alert} from '@mui/material';
+import Translate, {translate} from "@docusaurus/Translate";
 
 const PasswordComplexityCalculator = () => {
   const defaultUppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -55,18 +56,18 @@ const PasswordComplexityCalculator = () => {
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{padding: 3}}>
       <Typography variant="h6" gutterBottom>
-        密码复杂度计算器
+        <Translate>密码复杂度计算器</Translate>
       </Typography>
 
       <TextField
-        label="输入密码"
+        label={translate({message: "输入密码"})}
         variant="outlined"
         fullWidth
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
       />
 
       <Button
@@ -75,16 +76,16 @@ const PasswordComplexityCalculator = () => {
         fullWidth
         onClick={() => calculateCrackTime(password)}
       >
-        计算密码复杂度
+        <Translate>计算密码复杂度</Translate>
       </Button>
 
       {snackbarOpen && (
-        <Box sx={{ marginTop: 2 }}>
-          <Typography variant="body1" sx={{ marginBottom: 1 }}>
-            密码破解时间: {crackTime}
+        <Box sx={{marginTop: 2}}>
+          <Typography variant="body1" sx={{marginBottom: 1}}>
+            <Translate>密码破解时间</Translate>: {crackTime}
           </Typography>
           <Alert severity={complexity === 'strong' ? 'success' : complexity === 'medium' ? 'warning' : 'error'}>
-            密码复杂度: {complexity === 'strong' ? '强' : complexity === 'medium' ? '中' : '弱'}
+            <Translate>密码复杂度</Translate>: {complexity === 'strong' ? translate({message: '强'}) : complexity === 'medium' ? translate({message: '中'}) : translate({message: '弱'})}
           </Alert>
         </Box>
       )}
