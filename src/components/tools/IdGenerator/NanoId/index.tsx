@@ -17,6 +17,8 @@ import {
   Alert
 } from '@mui/material';
 import { customAlphabet, nanoid } from 'nanoid';
+import Translate from "@docusaurus/Translate";
+import DocCard from "@theme/DocCard";
 
 export default function NanoID() {
   const [nanoidList, setNanoIDList] = useState<string[]>([]);
@@ -103,7 +105,9 @@ export default function NanoID() {
 
           <Box sx={{ padding: 2, border: '1px solid #ddd', borderRadius: '8px', marginBottom: 4 }}>
             <Typography variant="h6" gutterBottom>
-              NanoID 配置
+              <Translate>
+                NanoID 配置
+              </Translate>
             </Typography>
 
             {/* Custom Alphabet Input */}

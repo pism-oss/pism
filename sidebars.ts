@@ -35,7 +35,7 @@ const sidebars: SidebarsConfig = {
   },
     {
       type: 'doc',
-      label: '随机秘密生成器',
+      label: '随机密码生成器',
       id: 'tools/password_generator/password_generator'
     },
     {

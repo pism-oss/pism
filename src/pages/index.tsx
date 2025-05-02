@@ -1,12 +1,16 @@
 import React, {ReactNode} from 'react';
-import clsx from 'clsx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import Project from "@site/src/components/Project";
-import { Analytics } from "@vercel/analytics/react"
-import {Box, Button} from "@mui/material";
-import Translate from "@docusaurus/Translate";
+import {Analytics} from "@vercel/analytics/react"
+import {Button, Grid, Popover, Stack, Typography} from "@mui/material";
+import Translate, {translate} from "@docusaurus/Translate";
 import Link from "@docusaurus/Link";
+import CardInfo from "@site/src/components/CardInfo";
+
+import {indexCard} from "@site/src/config/index.config";
+
+// import { useColorMode } from '@docusaurus/theme-common';
+
 
 // 定义 CSS 动画
 const fadeInAnimation = `
@@ -25,24 +29,39 @@ const fadeInAnimation = `
 export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
 
+  const [anchorEl, setAnchorEl] = React.useState<object>({});
+
+
   const words = ["Plan", "Implement", "Simplify", "Master"];
 
   const projects = [
     {
       title: 'ezasse',
-      desc: '项目脚本管理方案',
-      tags: ["版本管理", "java", "sql"],
+      desc: translate({message: '项目脚本管理方案'}),
+      tags: [translate({message: '版本管理'}), "java", "sql"],
       url: 'https:ezasse.pism.com.cn',
       logo: '/img/ezasse-bg.svg'
     },
     {
       title: 'Batslog',
-      desc: 'mybatis 日志插件',
+      desc: translate({message: 'mybatis 日志插件'}),
       tags: ["mybatis", "sql"],
       url: 'https://github.com/PerccyKing/batslog',
       logo: '/img/batslog.svg'
     }
   ]
+
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>, id: string) => {
+    const newAnchorEl = {...anchorEl};
+    newAnchorEl[id] = event.currentTarget;
+    setAnchorEl(newAnchorEl);
+  };
+
+  const handlePopoverClose = (id: string) => {
+    const newAnchorEl = {...anchorEl};
+    newAnchorEl[id] = null;
+    setAnchorEl(newAnchorEl);
+  };
 
   return (
     <Layout
@@ -51,9 +70,8 @@ export default function Home(): ReactNode {
     >
       <style>{fadeInAnimation}</style>
       <main>
-        <div className="row" style={{margin: '0em'}}>
-          <div className={clsx('col col--6')}>
-
+        <Grid container spacing={2}>
+          <Grid size={{xs: 12, md: 6, lg: 4}}>
             <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
               {words.map((word, index) => (
                 <h1
@@ -69,40 +87,75 @@ export default function Home(): ReactNode {
               ))}
               <Link
                 to="/docs/id_gen">
-                <Button variant="contained">在线工具</Button>
+                <Button variant="contained"><Translate>全部在线工具</Translate></Button>
               </Link>
             </div>
-          </div>
-          <div className={clsx('col col--6')} style={{padding: '2em'}}>
-            <div style={{
-              padding: '3rem 0rem'
-            }}>
-              <div style={{
-                margin: '0 auto'
-              }}>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                  gap: '2rem'
-                }}>
-                  {projects.map((project, index) => {
-                    return <Project
-                      key={index}
-                      title={project.title}
-                      description={project.desc}
-                      tags={project.tags}
-                      url={project.url}
-                      image={project.logo}
-                    />
-                  })}
+          </Grid>
+          <Grid size={{xs: 12, md: 6, lg: 8}}>
 
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <Stack spacing={6} style={{margin: "10px"}}>
+              {indexCard.map(cardGroup => {
+                return (<Grid rowSpacing={2}>
+                  <Typography variant="h5" component="div">
+                    <b>{cardGroup.name}</b>
+                  </Typography>
+                  <Typography gutterBottom sx={{color: 'text.secondary', fontSize: 14}}>
+                    {cardGroup.desc}
+                  </Typography>
+                  <Grid container spacing={2}>
+
+                    {cardGroup.cards.map(card => {
+                      return (<Grid
+                        size={{xs: 12, md: 6, lg: 3}}>
+                        <div
+                          aria-owns={Boolean(anchorEl[card.id]) ? 'mouse-over-popover' : undefined}
+                          aria-haspopup="true"
+                          onMouseEnter={(e) => handlePopoverOpen(e, card.id)}
+                          onMouseLeave={(e) => handlePopoverClose(card.id)}
+                        >
+                          <CardInfo
+                            item={{
+                              type: "link",
+                              label: card.name,
+                              href: card.href,
+                              docId: card.id,
+                              description: card.desc,
+                              unlisted: true
+                            }}
+                          ></CardInfo>
+                        </div>
+
+                        <Popover
+                          id={card.id}
+                          sx={{pointerEvents: 'none'}}
+                          open={Boolean(anchorEl[card.id])}
+                          anchorEl={anchorEl[card.id]}
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                          }}
+                          onClose={(e) => handlePopoverClose(card.id)}
+                          disableRestoreFocus
+                        >
+                          {React.createElement(card.component)}
+                        </Popover>
+                      </Grid>)
+                    })}
+
+
+                  </Grid>
+                </Grid>)
+              })}
+            </Stack>
+          </Grid>
+
+        </Grid>
       </main>
-      <Analytics />
+      <Analytics/>
     </Layout>
   );
 }

@@ -5,16 +5,20 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start --host 0.0.0.0",
+    "start-en": "docusaurus start --host 0.0.0.0 --locale en",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
+    "crowdin": "crowdin",
+    "crowdin:sync": "docusaurus write-translations && crowdin upload && crowdin download",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@crowdin/cli": "3",
     "@docusaurus/core": "3.7.0",
     "@docusaurus/plugin-content-blog": "^3.7.0",
     "@docusaurus/preset-classic": "3.7.0",

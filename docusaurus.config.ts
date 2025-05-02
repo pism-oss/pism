@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'PISM开源',
-  tagline: 'Plan Implement Simplify Simplify',
+  tagline: 'Plan Implement Simplify Master',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -28,7 +28,7 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'zh',
-    locales: ['zh'],
+    locales: ['zh', 'en'],
   },
 
   headTags: [
@@ -58,7 +58,8 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/pism-oss/pism',
+            'https://github.com/pism-oss/pism/blob/main',
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,
@@ -69,7 +70,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/pism-oss/pism',
+            'https://github.com/pism-oss/pism/blob/main',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -84,7 +85,7 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/pism.svg',
     navbar: {
       title: 'PISM开源',
       logo: {
@@ -96,7 +97,11 @@ const config: Config = {
         position: 'left',
         sidebarId: 'tools',
         label: '工具'
-      }],
+      }, {
+        type: 'localeDropdown',
+        position: 'left',
+      },
+      ],
     },
     footer: {
       style: 'light',
@@ -104,6 +109,11 @@ const config: Config = {
         <br/>
         <a href="https://beian.miit.gov.cn/">蜀ICP备19017495号-1</a>
 `,
+    },
+    colorMode:{
+      defaultMode: 'light',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
     },
     prism: {
       theme: prismThemes.github,
