@@ -53,7 +53,14 @@ const config: Config = {
         name: 'baidu_union_verify',
         content: 'a3328efdd27229dc4fef6baf78bdd6a8'
       }
-    }
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'baidu-site-verification',
+        content: 'codeva-aW6GdjFxjF'
+      }
+    },
   ],
 
   presets: [
