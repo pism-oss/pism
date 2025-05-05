@@ -1,0 +1,10 @@
+.input-field {
+    border: 1px solid #ccc;
+    padding: 8px;
+    min-height: 40px;
+    outline: none;
+}
+
+.chip-container {
+    display: inline;
+}

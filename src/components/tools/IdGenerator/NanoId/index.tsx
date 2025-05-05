@@ -134,7 +134,7 @@ export default function NanoID() {
             {/* Uppercase Checkbox */}
             <FormControlLabel
               control={<Checkbox checked={uppercase} onChange={() => setUppercase(!uppercase)}/>}
-              label="转为大写"
+              label={translate({message: "转为大写"})}
             />
 
             {/* Count Input */}

@@ -5,6 +5,7 @@ import NanoID from "@site/src/components/tools/IdGenerator/NanoId";
 import SnowflakeIDGenerator from "@site/src/components/tools/IdGenerator/SnowflakeId";
 import RandomPasswordGenerator from "@site/src/components/tools/PasswordGenerate";
 import passwordComplexityCalculator from "@site/src/components/tools/PasswordComplexityCalculator";
+import Md5 from "@site/src/components/tools/endecryption/md5";
 
 export type Card = {
   id: string,
@@ -51,6 +52,13 @@ export const indexCard: CardGroup[] = [{
   id: 'password',
   name: translate({message: '加密'}),
   cards: [
+    {
+      id: 'md5',
+      name: translate({message: 'md5'}),
+      desc: translate({message: '高阶md5加密工具'}),
+      href: 'docs/tools/endecryption/md5',
+      component: Md5,
+    },
     {
       id: 'password',
       name: translate({message: '随机密码生成器'}),

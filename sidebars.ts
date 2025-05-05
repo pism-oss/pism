@@ -24,8 +24,8 @@ const sidebars: SidebarsConfig = {
       title: 'ID在线生成',
       description:
         "一些常用的id生成器",
-      keywords: ['id','uuid','snowflake'],
-      slug:'/id_gen'
+      keywords: ['id', 'uuid', 'snowflake'],
+      slug: '/id_gen'
     },
     items: [
       'tools/id_generator/uuid',
@@ -34,15 +34,22 @@ const sidebars: SidebarsConfig = {
     ]
   },
     {
-      type: 'doc',
-      label: '随机密码生成器',
-      id: 'tools/password_generator/password_generator'
+      type: 'category',
+      label: '加解密',
+      link: {
+        type: 'generated-index',
+        title: '加解密工具',
+        description: "常用的加解密工具都在这里",
+        keywords: ['md5', 'bcrypt'],
+        slug: '/sec'
+      },
+      items: [
+        'tools/endecryption/md5',
+        'tools/password_generator/password_generator',
+        'tools/password_complexity_calculator/password_complexity_calculator'
+      ]
     },
-    {
-      type: 'doc',
-      label: '密码复杂度计算器',
-      id: 'tools/password_complexity_calculator/password_complexity_calculator'
-    }]
+  ]
 
   // But you can create a sidebar manually
   /*
