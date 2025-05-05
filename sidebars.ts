@@ -45,6 +45,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'tools/endecryption/md5',
+        'tools/endecryption/sha',
         'tools/endecryption/digest',
         'tools/password_generator/password_generator',
         'tools/password_complexity_calculator/password_complexity_calculator'

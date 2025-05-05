@@ -68,6 +68,14 @@ const algorithms: Alg[] = [
         : CryptoJS.SHA3(content).toString();
     },
   },
+  {
+    k: "ripemd160",
+    v: (content: string, key?: string) => {
+      return key
+        ? CryptoJS.HmacRIPEMD160(content, key).toString()
+        : CryptoJS.RIPEMD160(content).toString();
+    },
+  },
 ];
 
 const Digest = ({type = []}) => {

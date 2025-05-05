@@ -54,9 +54,16 @@ export const indexCard: CardGroup[] = [{
   cards: [
     {
       id: 'md5',
-      name: translate({message: 'md5'}),
-      desc: translate({message: '高自由度的md5加密工具'}),
+      name: translate({message: 'MD5'}),
+      desc: translate({message: '高自由度的MD5工具'}),
       href: 'docs/tools/endecryption/md5',
+      component: Md5,
+    },
+    {
+      id: 'sha',
+      name: translate({message: 'SHA'}),
+      desc: translate({message: '高自由度的SHA工具'}),
+      href: 'docs/tools/endecryption/sha',
       component: Md5,
     },
     {
