@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'PISM开源',
+  title: 'PISM',
   tagline: 'Plan Implement Simplify Master',
   favicon: 'img/favicon.ico',
 

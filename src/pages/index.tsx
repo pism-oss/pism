@@ -65,7 +65,7 @@ export default function Home(): ReactNode {
 
   return (
     <Layout
-      title={translate({message: siteConfig.title})}
+      title={translate({message: 'PISM 开源'})}
       description={translate({message: "PISM 开源平台提供丰富的在线开发工具，包括 UUID、Snowflake ID、NanoID 批量生成器，以及在线加密、解密、格式转换等实用功能，助力开发者高效构建与管理项目。"})}
     >
       <style>{fadeInAnimation}</style>
