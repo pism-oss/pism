@@ -1,5 +1,5 @@
 project_id: '784710'
-api_token: 072652bb76402ba6ce516a46fd01833c44060d4673cc9400560c29dd4aff2ca5243287275fd92d46
+api_token_env: CROWDIN_API_TOKEN
 preserve_hierarchy: true
 languages_mapping: &languages_mapping
   two_letters_code:
