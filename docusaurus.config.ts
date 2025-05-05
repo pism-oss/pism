@@ -136,14 +136,6 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
-    [
-      '@docusaurus/plugin-sitemap',
-      {
-        changefreq: 'weekly',
-        priority: 0.5,
-        filename: 'sitemap.xml',
-      },
-    ],
     function tailwindcssPlugin(context, options) {
       return {
         name: 'docusaurus-tailwindcss',
