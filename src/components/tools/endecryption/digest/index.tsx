@@ -148,7 +148,7 @@ const Digest = ({type = []}) => {
                 onChange={(e) => setUseHmac(e.target.checked)}
               />
             }
-            label="使用 HMAC"
+            label={translate({message: "使用 HMAC"})}
           />
 
           {useHmac && (
