@@ -107,7 +107,7 @@ export default function Home(): ReactNode {
                     {cardGroup.cards.map(card => {
                       return (<Grid
                         key={card.id}
-                        size={{xs: 12, md: 6, lg: 3}}>
+                        size={{xs: 12, md: 6, lg: 4}}>
                         <div
                           aria-owns={Boolean(anchorEl[card.id]) ? 'mouse-over-popover' : undefined}
                           aria-haspopup="true"

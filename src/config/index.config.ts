@@ -55,8 +55,15 @@ export const indexCard: CardGroup[] = [{
     {
       id: 'md5',
       name: translate({message: 'md5'}),
-      desc: translate({message: '高阶md5加密工具'}),
+      desc: translate({message: '高自由度的md5加密工具'}),
       href: 'docs/tools/endecryption/md5',
+      component: Md5,
+    },
+    {
+      id: 'digest',
+      name: translate({message: '摘要算法'}),
+      desc: translate({message: '在线使用高自由度的摘要算法'}),
+      href: 'docs/tools/endecryption/digest',
       component: Md5,
     },
     {
@@ -69,7 +76,7 @@ export const indexCard: CardGroup[] = [{
     {
       id: 'password_cal',
       name: translate({message: '密码复杂度计算器'}),
-      desc: translate({message: '计算秘密的复杂度以及安全性'}),
+      desc: translate({message: '计算密码的复杂度以及安全性'}),
       href: '/docs/tools/password_complexity_calculator',
       component: passwordComplexityCalculator,
     }
