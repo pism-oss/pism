@@ -100,6 +100,11 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/pism.svg',
+    docs: {
+      sidebar: {
+        hideable: true
+      },
+    },
     navbar: {
       title: 'PISM开源',
       logo: {
