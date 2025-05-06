@@ -6,6 +6,7 @@ import DocItemLayout from '@theme/DocItem/Layout';
 import type {Props} from '@theme/DocItem';
 import Waline from "@site/src/components/Waline";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import MUIWrapper from "@site/src/components/MUIWrapper";
 
 function substringFromStart(originalString, startString) {
   const startIndex = originalString.indexOf(startString);
@@ -20,15 +21,17 @@ export default function DocItem(props: Props): ReactNode {
   const MDXComponent = props.content;
   const {i18n: {currentLocale}} = useDocusaurusContext();
   return (
-    <DocProvider content={props.content}>
-      <HtmlClassNameProvider className={docHtmlClassName}>
-        <DocItemMetadata/>
-        <DocItemLayout>
-          <MDXComponent/>
-          {/*添加的评论区*/}
-          <Waline language={currentLocale} path={substringFromStart(props.location.pathname, '/docs')}/>
-        </DocItemLayout>
-      </HtmlClassNameProvider>
-    </DocProvider>
+    <MUIWrapper>
+      <DocProvider content={props.content}>
+        <HtmlClassNameProvider className={docHtmlClassName}>
+          <DocItemMetadata/>
+          <DocItemLayout>
+            <MDXComponent/>
+            {/*添加的评论区*/}
+            <Waline language={currentLocale} path={substringFromStart(props.location.pathname, '/docs')}/>
+          </DocItemLayout>
+        </HtmlClassNameProvider>
+      </DocProvider>
+    </MUIWrapper>
   );
 }
