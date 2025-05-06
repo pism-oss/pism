@@ -219,7 +219,7 @@ const Properties = ({onDataChange}) => {
                 onChange={(e) => setAttrName(e.target.value)}
               />
             </Grid>
-            <Grid size={{lg: 12}}>
+            <Grid size={{lg: 12, sm: 12, md: 12}}>
               <TextField
                 required
                 fullWidth
@@ -230,7 +230,7 @@ const Properties = ({onDataChange}) => {
                 onChange={(e) => setAttrKey(e.target.value)}
               />
             </Grid>
-            <Grid size={{lg: 12}}>
+            <Grid size={{lg: 12, sm: 12, md: 12}}>
               <Typography variant="subtitle1" gutterBottom>属性代码（JavaScript）</Typography>
               <Box sx={{height: '300px', border: '1px solid #ccc'}}>
                 <Editor
