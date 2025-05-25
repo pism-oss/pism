@@ -2,6 +2,7 @@ import React, {ReactNode} from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import {Analytics} from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import {Button, Grid, Popover, Stack, Typography} from "@mui/material";
 import Translate, {translate} from "@docusaurus/Translate";
 import Link from "@docusaurus/Link";
@@ -158,6 +159,7 @@ export default function Home(): ReactNode {
         </Grid>
       </main>
       <Analytics/>
+      <SpeedInsights/>
     </Layout>
   );
 }
