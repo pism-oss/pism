@@ -7,6 +7,7 @@ import type {Props} from '@theme/DocItem';
 import Waline from "@site/src/components/Waline";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import MUIWrapper from "@site/src/components/MUIWrapper";
+import MiniAppQRCode from "@site/src/components/MiniAppQRCode";
 
 function substringFromStart(originalString, startString) {
   const startIndex = originalString.indexOf(startString);
@@ -27,6 +28,7 @@ export default function DocItem(props: Props): ReactNode {
           <DocItemMetadata/>
           <DocItemLayout>
             <MDXComponent/>
+            <MiniAppQRCode />
             {/*添加的评论区*/}
             <Waline language={currentLocale} path={substringFromStart(props.location.pathname, '/docs')}/>
           </DocItemLayout>

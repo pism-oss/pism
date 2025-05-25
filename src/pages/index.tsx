@@ -7,6 +7,7 @@ import {Button, Grid, Popover, Stack, Typography} from "@mui/material";
 import Translate, {translate} from "@docusaurus/Translate";
 import Link from "@docusaurus/Link";
 import CardInfo from "@site/src/components/CardInfo";
+import MiniAppQRCode from "@site/src/components/MiniAppQRCode";
 
 import {indexCard} from "@site/src/config/index.config";
 
@@ -153,6 +154,8 @@ export default function Home(): ReactNode {
                   </Grid>
                 </Grid>)
               })}
+              {/* 小程序二维码展示 */}
+              <MiniAppQRCode />
             </Stack>
           </Grid>
 
