@@ -88,4 +88,16 @@ export const indexCard: CardGroup[] = [{
       component: passwordComplexityCalculator,
     }
   ]
+}, {
+  id: 'content_management',
+  name: translate({message: '内容管理'}),
+  desc: translate({message: '安全的内容管理系统'}),
+  cards: [
+    {
+      id: 'icey',
+      name: translate({message: '冰鉴'}),
+      desc: translate({message: '全加密应用工具'}),
+      href: '/icey',
+    }
+  ]
 }]
