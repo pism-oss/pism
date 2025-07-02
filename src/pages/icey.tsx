@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
-import { Container, Tabs, Tab, Box, Alert, LinearProgress, Typography, Backdrop, CircularProgress } from '@mui/material';
+import { Container, Tabs, Tab, Box, LinearProgress, Typography, Backdrop, CircularProgress, Snackbar, Alert } from '@mui/material';
 import Submit from '@site/src/components/tools/Icey/Submit';
 import Query from '@site/src/components/tools/Icey/Query';
 import Delete from '@site/src/components/tools/Icey/Delete';
@@ -8,17 +8,26 @@ import Delete from '@site/src/components/tools/Icey/Delete';
 export default function IceyPage() {
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, type: 'success', message: '' });
 
   const handleTabChange = (_event, newValue) => {
     setTabValue(newValue);
-    setAlert(null);
   };
 
   const showAlert = (type, message) => {
-    setAlert({ type, message });
-    setTimeout(() => setAlert(null), 5000);
+    setSnackbar({ open: true, type, message });
+    setTimeout(() => setSnackbar(s => ({ ...s, open: false })), 3000);
   };
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.detail && e.detail.type && e.detail.message) {
+        showAlert(e.detail.type, e.detail.message);
+      }
+    };
+    window.addEventListener('global-toast', handler);
+    return () => window.removeEventListener('global-toast', handler);
+  }, []);
 
   return (
     <Layout 
@@ -46,11 +55,16 @@ export default function IceyPage() {
 
         {loading && <LinearProgress sx={{ mb: 2 }} />}
         
-        {alert && (
-          <Alert severity={alert.type} sx={{ mb: 2 }}>
-            {alert.message}
+        <Snackbar
+          open={snackbar.open}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+          autoHideDuration={3000}
+        >
+          <Alert severity={snackbar.type} sx={{ width: '100%' }}>
+            {snackbar.message}
           </Alert>
-        )}
+        </Snackbar>
 
         <Box hidden={tabValue !== 0}>
           <Submit onAlert={showAlert} loading={loading} setLoading={setLoading} />

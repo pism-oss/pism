@@ -124,6 +124,14 @@ export default function Query({ onAlert, loading, setLoading }) {
     setViewDialogOpen(true);
   };
 
+  // 复制内容并全局提示
+  function globalCopy(text: string) {
+    navigator.clipboard.writeText(text);
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('global-toast', { detail: { type: 'success', message: '内容已复制' } }));
+    }, 0);
+  }
+
   return (
     <Stack spacing={3}>
       <Typography variant="h6">查询内容</Typography>
@@ -162,7 +170,7 @@ export default function Query({ onAlert, loading, setLoading }) {
                   <Typography variant="body1" sx={{ flex: 1, wordBreak: 'break-all' }}>
                     {item.content.length > 60 ? item.content.slice(0, 60) + '...' : item.content}
                   </Typography>
-                  <IconButton size="small" color="primary" onClick={() => {navigator.clipboard.writeText(item.content); onAlert('success', '内容已复制');}}>
+                  <IconButton size="small" color="primary" onClick={() => globalCopy(item.content)}>
                     <CopyIcon />
                   </IconButton>
                   {item.content.length > 60 && (
@@ -236,21 +244,19 @@ export default function Query({ onAlert, loading, setLoading }) {
       <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle>完整内容</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <TextField
-              value={viewContent}
-              fullWidth
-              multiline
-              minRows={4}
-              InputProps={{ readOnly: true }}
-            />
-            <IconButton color="primary" onClick={() => {navigator.clipboard.writeText(viewContent); onAlert('success', '内容已复制');}}>
-              <CopyIcon />
-            </IconButton>
-          </Box>
+          <TextField
+            value={viewContent}
+            fullWidth
+            multiline
+            minRows={4}
+            InputProps={{ readOnly: true }}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setViewDialogOpen(false)} variant="contained">关闭</Button>
+          <Button variant="text" color="primary" onClick={() => globalCopy(viewContent)}>
+            复制内容
+          </Button>
         </DialogActions>
       </Dialog>
     </Stack>
