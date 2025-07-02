@@ -39,6 +39,7 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
   const [token, setToken] = useState('');
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
+  const [tokenDialogOpen, setTokenDialogOpen] = useState(false);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -86,6 +87,7 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
 
       if (result.success) {
         setToken(result.data.token);
+        setTokenDialogOpen(true);
         onAlert('success', '内容提交成功！请保存删除令牌');
         setSubject('');
         setContent('');
@@ -137,32 +139,37 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         提交内容
       </Button>
 
-      {token && (
-        <Card variant="outlined">
-          <CardContent>
-            <Typography variant="h6" color="success.main" gutterBottom>
-              提交成功！
-            </Typography>
-            <Typography variant="body2" gutterBottom>
-              请保存以下删除令牌，用于后续删除操作：
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TextField
-                value={token}
-                fullWidth
-                size="small"
-                InputProps={{ readOnly: true }}
-              />
-              <IconButton
-                onClick={() => copyToClipboard(token)}
-                color="primary"
-              >
-                <CopyIcon />
-              </IconButton>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
+      {/* Token Dialog 替换原有 Card 展示 */}
+      <Dialog open={tokenDialogOpen} onClose={() => setTokenDialogOpen(false)}>
+        <DialogTitle>提交成功</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="error" gutterBottom>
+            删除令牌<strong>只显示一次</strong>，请妥善保存！遗失将无法删除内容。
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            请保存以下删除令牌，用于后续删除操作：
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TextField
+              value={token}
+              fullWidth
+              size="small"
+              InputProps={{ readOnly: true }}
+            />
+            <IconButton
+              onClick={() => copyToClipboard(token)}
+              color="primary"
+            >
+              <CopyIcon />
+            </IconButton>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" onClick={() => setTokenDialogOpen(false)}>
+            我已保存删除令牌
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Verification Code Dialog */}
       <Dialog open={codeDialogOpen} onClose={() => setCodeDialogOpen(false)}>

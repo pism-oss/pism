@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
-import { Container, Tabs, Tab, Box, Alert, LinearProgress, Typography } from '@mui/material';
+import { Container, Tabs, Tab, Box, Alert, LinearProgress, Typography, Backdrop, CircularProgress } from '@mui/material';
 import Submit from '@site/src/components/tools/Icey/Submit';
 import Query from '@site/src/components/tools/Icey/Query';
 import Delete from '@site/src/components/tools/Icey/Delete';
@@ -26,6 +26,9 @@ export default function IceyPage() {
       description="冰鉴 - 全加密应用工具"
     >
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Backdrop open={loading} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, color: '#fff' }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Typography variant="h3" component="h1" gutterBottom align="center">
           冰鉴
         </Typography>
