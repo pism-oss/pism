@@ -11,9 +11,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  IconButton
 } from '@mui/material';
-import { Search as SearchIcon, ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon } from '@mui/icons-material';
+import { Search as SearchIcon, ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import { sha256 } from '@site/src/utils/Sha256Util';
 
 interface ContentItem {
@@ -43,6 +44,8 @@ export default function Query({ onAlert, loading, setLoading }) {
   const [verificationCode, setVerificationCode] = useState('');
   const [voteDialogOpen, setVoteDialogOpen] = useState(false);
   const [voteTarget, setVoteTarget] = useState<{ id: string; vote: 0 | 1 } | null>(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [viewContent, setViewContent] = useState('');
 
   const formatTimestamp = (ts: string) => new Date(parseInt(ts)).toLocaleString('zh-CN');
 
@@ -51,7 +54,6 @@ export default function Query({ onAlert, loading, setLoading }) {
       onAlert('error', '请填写主题');
       return;
     }
-
     setCodeDialogOpen(true);
   };
 
@@ -105,7 +107,6 @@ export default function Query({ onAlert, loading, setLoading }) {
       const result: ApiResponse<{ percent: number }> = await response.json();
       if (result.success) {
         onAlert('success', `投票成功！当前可信比例：${result.data.percent}%`);
-        // 重新查询刷新数据
         setVerificationCode('');
         await handleCodeSubmit();
       } else {
@@ -116,6 +117,11 @@ export default function Query({ onAlert, loading, setLoading }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewAll = (content: string) => {
+    setViewContent(content);
+    setViewDialogOpen(true);
   };
 
   return (
@@ -150,10 +156,21 @@ export default function Query({ onAlert, loading, setLoading }) {
             {results.map((item, index) => (
               <ListItem key={index} divider sx={{ flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="subtitle2" color="text.secondary">ID: {item.id}</Typography>
                   <Typography variant="caption" color="text.secondary">{formatTimestamp(item.ts)}</Typography>
                 </Box>
-                <Typography variant="body1" sx={{ width: '100%' }}>{item.content}</Typography>
+                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body1" sx={{ flex: 1, wordBreak: 'break-all' }}>
+                    {item.content.length > 60 ? item.content.slice(0, 60) + '...' : item.content}
+                  </Typography>
+                  <IconButton size="small" color="primary" onClick={() => {navigator.clipboard.writeText(item.content); onAlert('success', '内容已复制');}}>
+                    <CopyIcon />
+                  </IconButton>
+                  {item.content.length > 60 && (
+                    <Button size="small" onClick={() => handleViewAll(item.content)}>
+                      查看全部
+                    </Button>
+                  )}
+                </Box>
                 <Box sx={{ width: '100%' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="caption">可信度: {item.conf.percent}%</Typography>
@@ -213,6 +230,27 @@ export default function Query({ onAlert, loading, setLoading }) {
         <DialogActions>
           <Button onClick={() => setVoteDialogOpen(false)}>取消</Button>
           <Button onClick={handleVoteDialogSubmit} variant="contained">确认投票</Button>
+        </DialogActions>
+      </Dialog>
+      {/* 查看全部内容弹窗 */}
+      <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>完整内容</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <TextField
+              value={viewContent}
+              fullWidth
+              multiline
+              minRows={4}
+              InputProps={{ readOnly: true }}
+            />
+            <IconButton color="primary" onClick={() => {navigator.clipboard.writeText(viewContent); onAlert('success', '内容已复制');}}>
+              <CopyIcon />
+            </IconButton>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setViewDialogOpen(false)} variant="contained">关闭</Button>
         </DialogActions>
       </Dialog>
     </Stack>
