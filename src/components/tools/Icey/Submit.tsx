@@ -18,6 +18,7 @@ import {
   ContentCopy as CopyIcon
 } from '@mui/icons-material';
 import { sha256 } from '@site/src/utils/Sha256Util';
+import { md5, aesEncrypt } from '@site/src/utils/FunctionUtil';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -70,7 +71,21 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
     setLoading(true);
 
     try {
+      // 1. 原文sha256 (用于API请求)
       const subjectHash = await sha256(subject);
+      // 2. 生成加密密钥: sha256(sha256(subject) + md5(subject))
+      const hash1 = await sha256(subject);
+      const hash2 = md5(subject);
+      const encryptionKey = await sha256(hash1 + hash2);
+      // 5. 使用AES加密内容
+      const encryptedContent = aesEncrypt(encryptionKey, content);
+
+      console.log('准备发送请求，数据:', {
+        subject: subjectHash,
+        contentLength: encryptedContent.length,
+        code: verificationCode
+      });
+
       const response = await fetch(`${API_BASE_URL}/commit`, {
         method: 'POST',
         headers: {
@@ -78,7 +93,7 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         },
         body: JSON.stringify({
           subject: subjectHash,
-          content: content,
+          content: encryptedContent,
           code: verificationCode,
         }),
       });
@@ -96,6 +111,15 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         onAlert('error', result.msg || '提交失败');
       }
     } catch (error) {
+      console.error('提交过程出错:', error);
+      // 检查是否是加密过程的错误
+      if (error instanceof Error) {
+        console.error('错误详情:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      }
       onAlert('error', '网络错误，请稍后重试');
     } finally {
       setLoading(false);

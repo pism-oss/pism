@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import { sha256 } from '@site/src/utils/Sha256Util';
+import { md5, aesDecrypt } from '@site/src/utils/FunctionUtil';
 
 interface ContentItem {
   content: string;
@@ -65,6 +66,7 @@ export default function Query({ onAlert, loading, setLoading }) {
     setCodeDialogOpen(false);
     setLoading(true);
     try {
+      // 1. 原文sha256 (用于API请求)
       const subjectHash = await sha256(subject);
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
@@ -73,13 +75,26 @@ export default function Query({ onAlert, loading, setLoading }) {
       });
       const result: ApiResponse<ContentItem[]> = await response.json();
       if (result.success) {
-        setResults(result.data || []);
-        onAlert('success', `查询成功，找到 ${result.data?.length || 0} 条记录`);
+        // 解密过程 - 与Submit组件保持完全一致
+        // 生成解密密钥: sha256(sha256(subject) + md5(subject))
+        const hash1 = await sha256(subject);
+        const hash2 = md5(subject);
+        const decryptionKey = await sha256(hash1 + hash2);
+
+        // 解密每条内容
+        const decryptedResults = result.data.map(item => ({
+          ...item,
+          content: aesDecrypt(decryptionKey, item.content)
+        }));
+
+        setResults(decryptedResults || []);
+        onAlert('success', `查询成功，找到 ${decryptedResults?.length || 0} 条记录`);
       } else {
         onAlert('error', result.msg || '查询失败');
       }
-    } catch {
-      onAlert('error', '网络错误，请稍后重试');
+    } catch (error) {
+      console.error('解密过程出错:', error);
+      onAlert('error', '解密失败，请检查主题是否正确');
     } finally {
       setLoading(false);
     }
