@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { sha256 } from '@site/src/utils/Sha256Util';
 import { md5, aesEncrypt } from '@site/src/utils/FunctionUtil';
+import VerificationCodeInput from '@site/src/components/VerificationCodeInput';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -39,7 +40,6 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
   const [content, setContent] = useState('');
   const [token, setToken] = useState('');
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
   const [tokenDialogOpen, setTokenDialogOpen] = useState(false);
 
   const copyToClipboard = (text: string) => {
@@ -53,15 +53,10 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
       return;
     }
 
-    if (subject.length < 6) {
-      onAlert('error', '主题必须至少包含6个字符');
-      return;
-    }
-
     setCodeDialogOpen(true);
   };
 
-  const handleCodeSubmit = async () => {
+  const handleCodeSubmit = async (verificationCode: string) => {
     if (!/^[0-9]{6}$/.test(verificationCode)) {
       onAlert('error', '验证码必须是6位数字');
       return;
@@ -106,13 +101,11 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         onAlert('success', '内容提交成功！请保存删除令牌');
         setSubject('');
         setContent('');
-        setVerificationCode('');
       } else {
         onAlert('error', result.msg || '提交失败');
       }
     } catch (error) {
       console.error('提交过程出错:', error);
-      // 检查是否是加密过程的错误
       if (error instanceof Error) {
         console.error('错误详情:', {
           name: error.name,
@@ -195,30 +188,14 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         </DialogActions>
       </Dialog>
 
-      {/* Verification Code Dialog */}
-      <Dialog open={codeDialogOpen} onClose={() => setCodeDialogOpen(false)}>
-        <DialogTitle>输入验证码</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="验证码"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-            placeholder="请输入6位数字验证码"
-            inputProps={{ maxLength: 6 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCodeDialogOpen(false)}>取消</Button>
-          <Button onClick={handleCodeSubmit} variant="contained">
-            确认
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Verification Code Input */}
+      <VerificationCodeInput
+        open={codeDialogOpen}
+        onClose={() => setCodeDialogOpen(false)}
+        onSubmit={handleCodeSubmit}
+        title="提交验证"
+        submitText="确认提交"
+      />
     </Stack>
   );
 }

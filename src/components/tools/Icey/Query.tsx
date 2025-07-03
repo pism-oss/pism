@@ -17,6 +17,7 @@ import {
 import { Search as SearchIcon, ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
 import { sha256 } from '@site/src/utils/Sha256Util';
 import { md5, aesDecrypt } from '@site/src/utils/FunctionUtil';
+import VerificationCodeInput from '@site/src/components/VerificationCodeInput';
 
 interface ContentItem {
   content: string;
@@ -41,8 +42,7 @@ const API_BASE_URL = 'https://api.icey.pism.com.cn';
 export default function Query({ onAlert, loading, setLoading }) {
   const [subject, setSubject] = useState('');
   const [results, setResults] = useState<ContentItem[]>([]);
-  const [codeDialogOpen, setCodeDialogOpen] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
+  const [queryDialogOpen, setQueryDialogOpen] = useState(false);
   const [voteDialogOpen, setVoteDialogOpen] = useState(false);
   const [voteTarget, setVoteTarget] = useState<{ id: string; vote: 0 | 1 } | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -55,15 +55,11 @@ export default function Query({ onAlert, loading, setLoading }) {
       onAlert('error', '请填写主题');
       return;
     }
-    setCodeDialogOpen(true);
+    setQueryDialogOpen(true);
   };
 
-  const handleCodeSubmit = async () => {
-    if (!/^[0-9]{6}$/.test(verificationCode)) {
-      onAlert('error', '验证码必须是6位数字');
-      return;
-    }
-    setCodeDialogOpen(false);
+  const handleQuerySubmit = async (code: string) => {
+    setQueryDialogOpen(false);
     setLoading(true);
     try {
       // 1. 原文sha256 (用于API请求)
@@ -71,7 +67,7 @@ export default function Query({ onAlert, loading, setLoading }) {
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: subjectHash, code: verificationCode }),
+        body: JSON.stringify({ subject: subjectHash, code }),
       });
       const result: ApiResponse<ContentItem[]> = await response.json();
       if (result.success) {
@@ -105,9 +101,9 @@ export default function Query({ onAlert, loading, setLoading }) {
     setVoteDialogOpen(true);
   };
 
-  const handleVoteDialogSubmit = async () => {
-    if (!voteTarget || !/^[0-9]{6}$/.test(verificationCode)) {
-      onAlert('error', '请填写6位数字验证码');
+  const handleVoteSubmit = async (code: string) => {
+    if (!voteTarget) {
+      onAlert('error', '投票目标无效');
       return;
     }
     setVoteDialogOpen(false);
@@ -117,13 +113,12 @@ export default function Query({ onAlert, loading, setLoading }) {
       const response = await fetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: subjectHash, id: voteTarget.id, vote: voteTarget.vote, code: verificationCode }),
+        body: JSON.stringify({ subject: subjectHash, id: voteTarget.id, vote: voteTarget.vote, code }),
       });
       const result: ApiResponse<{ percent: number }> = await response.json();
       if (result.success) {
         onAlert('success', `投票成功！当前可信比例：${result.data.percent}%`);
-        setVerificationCode('');
-        await handleCodeSubmit();
+        await handleQuerySubmit(code);
       } else {
         onAlert('error', result.msg || '投票失败');
       }
@@ -199,10 +194,30 @@ export default function Query({ onAlert, loading, setLoading }) {
                     <Typography variant="caption">可信度: {item.conf.percent}%</Typography>
                     <Typography variant="caption">{item.conf.true}/{item.conf.total} (可信/总数)</Typography>
                   </Box>
-                  <LinearProgress variant="determinate" value={item.conf.percent} sx={{ height: 8, borderRadius: 4, mb: 1 }} />
+                  <LinearProgress
+                    variant="determinate"
+                    value={item.conf.percent}
+                    sx={{ mb: 1, borderRadius: 1 }}
+                  />
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button size="small" variant="outlined" color="success" startIcon={<ThumbUpIcon />} onClick={() => handleVoteClick(item.id, 1)}>可信</Button>
-                    <Button size="small" variant="outlined" color="error" startIcon={<ThumbDownIcon />} onClick={() => handleVoteClick(item.id, 0)}>不可信</Button>
+                    <Button
+                      size="small"
+                      startIcon={<ThumbUpIcon />}
+                      onClick={() => handleVoteClick(item.id, 1)}
+                      variant="outlined"
+                      color="success"
+                    >
+                      可信
+                    </Button>
+                    <Button
+                      size="small"
+                      startIcon={<ThumbDownIcon />}
+                      onClick={() => handleVoteClick(item.id, 0)}
+                      variant="outlined"
+                      color="error"
+                    >
+                      不可信
+                    </Button>
                   </Box>
                 </Box>
               </ListItem>
@@ -210,69 +225,32 @@ export default function Query({ onAlert, loading, setLoading }) {
           </List>
         </Box>
       )}
-      {/* 查询验证码弹窗 */}
-      <Dialog open={codeDialogOpen} onClose={() => setCodeDialogOpen(false)}>
-        <DialogTitle>输入验证码</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="验证码"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={verificationCode}
-            onChange={e => setVerificationCode(e.target.value)}
-            placeholder="请输入6位数字验证码"
-            inputProps={{ maxLength: 6 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCodeDialogOpen(false)}>取消</Button>
-          <Button onClick={handleCodeSubmit} variant="contained">确认</Button>
-        </DialogActions>
-      </Dialog>
-      {/* 投票验证码弹窗 */}
-      <Dialog open={voteDialogOpen} onClose={() => setVoteDialogOpen(false)}>
-        <DialogTitle>投票验证</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>请输入验证码以完成投票操作</Typography>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="验证码"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={verificationCode}
-            onChange={e => setVerificationCode(e.target.value)}
-            placeholder="请输入6位数字验证码"
-            inputProps={{ maxLength: 6 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setVoteDialogOpen(false)}>取消</Button>
-          <Button onClick={handleVoteDialogSubmit} variant="contained">确认投票</Button>
-        </DialogActions>
-      </Dialog>
-      {/* 查看全部内容弹窗 */}
-      <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>完整内容</DialogTitle>
-        <DialogContent>
-          <TextField
-            value={viewContent}
-            fullWidth
-            multiline
-            minRows={4}
-            InputProps={{ readOnly: true }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewDialogOpen(false)} variant="contained">关闭</Button>
-          <Button variant="text" color="primary" onClick={() => globalCopy(viewContent)}>
-            复制内容
-          </Button>
-        </DialogActions>
+
+      <VerificationCodeInput
+        open={queryDialogOpen}
+        onClose={() => setQueryDialogOpen(false)}
+        onSubmit={handleQuerySubmit}
+        title="查询验证"
+      />
+
+      <VerificationCodeInput
+        open={voteDialogOpen}
+        onClose={() => setVoteDialogOpen(false)}
+        onSubmit={handleVoteSubmit}
+        title="投票验证"
+      />
+
+      <Dialog
+        open={viewDialogOpen}
+        onClose={() => setViewDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            {viewContent}
+          </Typography>
+        </Box>
       </Dialog>
     </Stack>
   );
