@@ -72,7 +72,10 @@ const config: Config = {
           var s = document.getElementsByTagName("script")[0]; 
           s.parentNode.insertBefore(hm, s);
         })();
-      `
+      `,
+      attributes: {
+        type: 'text/javascript'
+      }
     }
   ],
 
