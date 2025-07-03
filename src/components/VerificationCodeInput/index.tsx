@@ -36,16 +36,16 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
 }) => {
   const [verificationCode, setVerificationCode] = useState('');
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const tooltipTimeoutRef = useRef<NodeJS.Timeout>();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches: true });
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Close tooltip when dialog closes
   useEffect(() => {
     if (!open) {
       setTooltipOpen(false);
-      setQrDialogOpen(false);
+      setHelpDialogOpen(false);
     }
   }, [open]);
 
@@ -63,9 +63,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
       clearTimeout(tooltipTimeoutRef.current);
     }
     tooltipTimeoutRef.current = setTimeout(() => {
-      if (!qrDialogOpen) {
-        setTooltipOpen(false);
-      }
+      setTooltipOpen(false);
     }, 300);
   };
 
@@ -79,16 +77,45 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
     setVerificationCode('');
   };
 
+  const HelpContent = () => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          1. 关注微信公众号：PISM
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          2. 发送 "主题+验证码" 获取验证码
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, color: 'primary.main' }}>
+          例如：发送 "PISM验证码" 获取验证码
+        </Typography>
+      </Box>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+      }}>
+        <img 
+          src={isMobile ? "/img/wechat_qr.jpg" : "/img/wechat_qr_code.png"}
+          alt="PISM 公众号二维码"
+          style={{ 
+            width: '100%',
+            height: 'auto',
+            objectFit: 'contain',
+            borderRadius: '4px'
+          }}
+        />
+      </Box>
+    </Box>
+  );
+
   const TooltipContent = () => (
     <Paper 
       sx={{ 
         p: 2, 
-        maxWidth: 320,
-        cursor: 'pointer' 
-      }}
-      onClick={() => {
-        setQrDialogOpen(true);
-        setTooltipOpen(false);
+        width: 400,
+        maxWidth: '90vw',
       }}
       onMouseEnter={() => {
         if (tooltipTimeoutRef.current) {
@@ -100,31 +127,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
       <Typography variant="subtitle2" gutterBottom>
         如何获取验证码？
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Box>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            1. 关注微信公众号：PISM
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            2. 发送 "PISM验证码" 获取验证码
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <img 
-            src="/img/wechat_qr_code.png" 
-            alt="PISM 公众号二维码"
-            style={{ 
-              width: '150px',
-              height: '150px',
-              objectFit: 'contain',
-              borderRadius: '4px'
-            }}
-          />
-        </Box>
-        <Typography variant="caption" color="primary" align="center">
-          点击查看大图
-        </Typography>
-      </Box>
+      <HelpContent />
     </Paper>
   );
 
@@ -141,43 +144,58 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
           }
         }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {title}
-          <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
-            <div>
-              <Tooltip
-                open={tooltipOpen}
-                onClose={handleTooltipClose}
-                title={<TooltipContent />}
-                placement="right"
-                arrow
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      bgcolor: 'background.paper',
-                      '& .MuiTooltip-arrow': {
-                        color: 'background.paper',
-                      },
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                    }
-                  }
-                }}
-              >
-                <IconButton
-                  size="small"
-                  onMouseEnter={() => !isMobile && setTooltipOpen(true)}
-                  onClick={() => isMobile && setQrDialogOpen(true)}
-                  sx={{ 
-                    '&:hover': { 
-                      backgroundColor: 'rgba(25, 118, 210, 0.04)' 
+          {isMobile ? (
+            <IconButton
+              size="small"
+              onClick={() => setHelpDialogOpen(true)}
+              sx={{ 
+                '&:hover': { 
+                  backgroundColor: 'rgba(25, 118, 210, 0.04)' 
+                }
+              }}
+            >
+              <HelpOutlineIcon fontSize="small" color="primary" />
+            </IconButton>
+          ) : (
+            <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
+              <div>
+                <Tooltip
+                  open={tooltipOpen}
+                  onClose={handleTooltipClose}
+                  title={<TooltipContent />}
+                  placement="right"
+                  arrow
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        bgcolor: 'background.paper',
+                        '& .MuiTooltip-arrow': {
+                          color: 'background.paper',
+                        },
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                        width: '420px !important',
+                        maxWidth: '90vw !important'
+                      }
                     }
                   }}
                 >
-                  <HelpOutlineIcon fontSize="small" color="primary" />
-                </IconButton>
-              </Tooltip>
-            </div>
-          </ClickAwayListener>
+                  <IconButton
+                    size="small"
+                    onMouseEnter={() => setTooltipOpen(true)}
+                    sx={{ 
+                      '&:hover': { 
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)' 
+                      }
+                    }}
+                  >
+                    <HelpOutlineIcon fontSize="small" color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </ClickAwayListener>
+          )}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -202,46 +220,21 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
         </DialogActions>
       </Dialog>
 
+      {/* 移动端帮助对话框 */}
       <Dialog
-        open={qrDialogOpen}
-        onClose={() => setQrDialogOpen(false)}
+        open={helpDialogOpen && isMobile}
+        onClose={() => setHelpDialogOpen(false)}
         maxWidth="sm"
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            p: 2
-          }
-        }}
+        fullWidth
       >
         <DialogTitle>
-          <Typography variant="h6" align="center">
-            扫码关注 PISM
-          </Typography>
+          如何获取验证码？
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center',
-            gap: 2,
-            p: 2
-          }}>
-            <img 
-              src="/img/wechat_qr_code.png" 
-              alt="PISM 公众号二维码"
-              style={{ 
-                width: isMobile ? '280px' : '320px',
-                height: isMobile ? '280px' : '320px',
-                objectFit: 'contain'
-              }}
-            />
-            <Typography variant="body1" color="text.secondary" align="center">
-              关注后发送 "PISM验证码" 获取验证码
-            </Typography>
-          </Box>
+          <HelpContent />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setQrDialogOpen(false)} variant="contained" fullWidth>
+          <Button onClick={() => setHelpDialogOpen(false)} variant="contained" fullWidth>
             我知道了
           </Button>
         </DialogActions>
