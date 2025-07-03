@@ -15,8 +15,7 @@ import {
   IconButton
 } from '@mui/material';
 import { Search as SearchIcon, ThumbUp as ThumbUpIcon, ThumbDown as ThumbDownIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
-import { sha256 } from '@site/src/utils/Sha256Util';
-import { md5, aesDecrypt } from '@site/src/utils/FunctionUtil';
+import IceyApiUtil from '@site/src/utils/IceyApiUtil';
 import VerificationCodeInput from '@site/src/components/VerificationCodeInput';
 
 interface ContentItem {
@@ -30,14 +29,6 @@ interface ContentItem {
     percent: number;
   };
 }
-
-interface ApiResponse<T> {
-  success: boolean;
-  msg: string;
-  data: T;
-}
-
-const API_BASE_URL = 'https://api.icey.pism.com.cn';
 
 export default function Query({ onAlert, loading, setLoading }) {
   const [subject, setSubject] = useState('');
@@ -62,35 +53,12 @@ export default function Query({ onAlert, loading, setLoading }) {
     setQueryDialogOpen(false);
     setLoading(true);
     try {
-      // 1. 原文sha256 (用于API请求)
-      const subjectHash = await sha256(subject);
-      const response = await fetch(`${API_BASE_URL}/query`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: subjectHash, code }),
-      });
-      const result: ApiResponse<ContentItem[]> = await response.json();
-      if (result.success) {
-        // 解密过程 - 与Submit组件保持完全一致
-        // 生成解密密钥: sha256(sha256(subject) + md5(subject))
-        const hash1 = await sha256(subject);
-        const hash2 = md5(subject);
-        const decryptionKey = await sha256(hash1 + hash2);
-
-        // 解密每条内容
-        const decryptedResults = result.data.map(item => ({
-          ...item,
-          content: aesDecrypt(decryptionKey, item.content)
-        }));
-
-        setResults(decryptedResults || []);
-        onAlert('success', `查询成功，找到 ${decryptedResults?.length || 0} 条记录`);
-      } else {
-        onAlert('error', result.msg || '查询失败');
-      }
+      const results = await IceyApiUtil.queryContent(subject, code);
+      setResults(results);
+      onAlert('success', `查询成功，找到 ${results.length} 条记录`);
     } catch (error) {
-      console.error('解密过程出错:', error);
-      onAlert('error', '解密失败，请检查主题是否正确');
+      console.error('查询失败:', error);
+      onAlert('error', error instanceof Error ? error.message : '查询失败');
     } finally {
       setLoading(false);
     }
@@ -109,21 +77,12 @@ export default function Query({ onAlert, loading, setLoading }) {
     setVoteDialogOpen(false);
     setLoading(true);
     try {
-      const subjectHash = await sha256(subject);
-      const response = await fetch(`${API_BASE_URL}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: subjectHash, id: voteTarget.id, vote: voteTarget.vote, code }),
-      });
-      const result: ApiResponse<{ percent: number }> = await response.json();
-      if (result.success) {
-        onAlert('success', `投票成功！当前可信比例：${result.data.percent}%`);
-        await handleQuerySubmit(code);
-      } else {
-        onAlert('error', result.msg || '投票失败');
-      }
-    } catch {
-      onAlert('error', '网络错误，请稍后重试');
+      const percent = await IceyApiUtil.vote(subject, voteTarget.id, voteTarget.vote, code);
+      onAlert('success', `投票成功！当前可信比例：${percent}%`);
+      // 重新查询以更新列表
+      await handleQuerySubmit(code);
+    } catch (error) {
+      onAlert('error', error instanceof Error ? error.message : '投票失败');
     } finally {
       setLoading(false);
     }
@@ -199,12 +158,11 @@ export default function Query({ onAlert, loading, setLoading }) {
                     value={item.conf.percent}
                     sx={{ mb: 1, borderRadius: 1 }}
                   />
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                     <Button
                       size="small"
                       startIcon={<ThumbUpIcon />}
                       onClick={() => handleVoteClick(item.id, 1)}
-                      variant="outlined"
                       color="success"
                     >
                       可信
@@ -213,7 +171,6 @@ export default function Query({ onAlert, loading, setLoading }) {
                       size="small"
                       startIcon={<ThumbDownIcon />}
                       onClick={() => handleVoteClick(item.id, 0)}
-                      variant="outlined"
                       color="error"
                     >
                       不可信
@@ -226,31 +183,47 @@ export default function Query({ onAlert, loading, setLoading }) {
         </Box>
       )}
 
+      {/* 验证码输入对话框 - 查询 */}
       <VerificationCodeInput
         open={queryDialogOpen}
         onClose={() => setQueryDialogOpen(false)}
         onSubmit={handleQuerySubmit}
         title="查询验证"
+        submitText="确认查询"
       />
 
+      {/* 验证码输入对话框 - 投票 */}
       <VerificationCodeInput
         open={voteDialogOpen}
         onClose={() => setVoteDialogOpen(false)}
         onSubmit={handleVoteSubmit}
         title="投票验证"
+        submitText="确认投票"
       />
 
+      {/* 查看全部内容对话框 */}
       <Dialog
         open={viewDialogOpen}
         onClose={() => setViewDialogOpen(false)}
         maxWidth="sm"
         fullWidth
       >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-            {viewContent}
-          </Typography>
-        </Box>
+        <DialogTitle>完整内容</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+              {viewContent}
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => globalCopy(viewContent)} startIcon={<CopyIcon />}>
+            复制
+          </Button>
+          <Button onClick={() => setViewDialogOpen(false)}>
+            关闭
+          </Button>
+        </DialogActions>
       </Dialog>
     </Stack>
   );

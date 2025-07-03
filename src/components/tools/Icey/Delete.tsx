@@ -7,7 +7,7 @@ import {
   Box
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
-import { sha256 } from '@site/src/utils/Sha256Util';
+import IceyApiUtil from '@site/src/utils/IceyApiUtil';
 import VerificationCodeInput from '@site/src/components/VerificationCodeInput';
 
 interface ApiResponse<T> {
@@ -40,22 +40,12 @@ export default function Delete({ onAlert, loading, setLoading }) {
     setCodeDialogOpen(false);
     setLoading(true);
     try {
-      const subjectHash = await sha256(subject);
-      const response = await fetch(`${API_BASE_URL}/delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: subjectHash, code: verificationCode, token }),
-      });
-      const result: ApiResponse<null> = await response.json();
-      if (result.success) {
-        onAlert('success', '内容删除成功');
-        setSubject('');
-        setToken('');
-      } else {
-        onAlert('error', result.msg || '删除失败');
-      }
-    } catch {
-      onAlert('error', '网络错误，请稍后重试');
+      await IceyApiUtil.deleteContent(subject, token, verificationCode);
+      onAlert('success', '内容删除成功');
+      setSubject('');
+      setToken('');
+    } catch (error) {
+      onAlert('error', error instanceof Error ? error.message : '删除失败');
     } finally {
       setLoading(false);
     }

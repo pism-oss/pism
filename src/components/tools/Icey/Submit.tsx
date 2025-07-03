@@ -2,32 +2,21 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  Card,
-  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
   Stack,
   Typography,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
 } from '@mui/material';
 import {
   Send as SendIcon,
   ContentCopy as CopyIcon
 } from '@mui/icons-material';
-import { sha256 } from '@site/src/utils/Sha256Util';
-import { md5, aesEncrypt } from '@site/src/utils/FunctionUtil';
+import IceyApiUtil from '@site/src/utils/IceyApiUtil';
 import VerificationCodeInput from '@site/src/components/VerificationCodeInput';
-
-interface ApiResponse<T> {
-  success: boolean;
-  msg: string;
-  data: T;
-}
-
-const API_BASE_URL = 'https://api.icey.pism.com.cn';
 
 interface SubmitProps {
   onAlert: (type: 'success' | 'error' | 'info', message: string) => void;
@@ -66,54 +55,15 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
     setLoading(true);
 
     try {
-      // 1. 原文sha256 (用于API请求)
-      const subjectHash = await sha256(subject);
-      // 2. 生成加密密钥: sha256(sha256(subject) + md5(subject))
-      const hash1 = await sha256(subject);
-      const hash2 = md5(subject);
-      const encryptionKey = await sha256(hash1 + hash2);
-      // 5. 使用AES加密内容
-      const encryptedContent = aesEncrypt(encryptionKey, content);
-
-      console.log('准备发送请求，数据:', {
-        subject: subjectHash,
-        contentLength: encryptedContent.length,
-        code: verificationCode
-      });
-
-      const response = await fetch(`${API_BASE_URL}/commit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: subjectHash,
-          content: encryptedContent,
-          code: verificationCode,
-        }),
-      });
-
-      const result: ApiResponse<{ token: string }> = await response.json();
-
-      if (result.success) {
-        setToken(result.data.token);
-        setTokenDialogOpen(true);
-        onAlert('success', '内容提交成功！请保存删除令牌');
-        setSubject('');
-        setContent('');
-      } else {
-        onAlert('error', result.msg || '提交失败');
-      }
+      const token = await IceyApiUtil.submitContent(subject, content, verificationCode);
+      setToken(token);
+      setTokenDialogOpen(true);
+      onAlert('success', '内容提交成功！请保存删除令牌');
+      setSubject('');
+      setContent('');
     } catch (error) {
-      console.error('提交过程出错:', error);
-      if (error instanceof Error) {
-        console.error('错误详情:', {
-          name: error.name,
-          message: error.message,
-          stack: error.stack
-        });
-      }
-      onAlert('error', '网络错误，请稍后重试');
+      console.error('提交失败:', error);
+      onAlert('error', error instanceof Error ? error.message : '提交失败');
     } finally {
       setLoading(false);
     }
@@ -156,7 +106,7 @@ export default function Submit({ onAlert, loading, setLoading }: SubmitProps) {
         提交内容
       </Button>
 
-      {/* Token Dialog 替换原有 Card 展示 */}
+      {/* Token Dialog */}
       <Dialog open={tokenDialogOpen} onClose={() => setTokenDialogOpen(false)}>
         <DialogTitle>提交成功</DialogTitle>
         <DialogContent>
