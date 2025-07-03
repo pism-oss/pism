@@ -61,6 +61,19 @@ const config: Config = {
         content: 'codeva-aW6GdjFxjF'
       }
     },
+    // 百度统计代码
+    {
+      tagName: 'script',
+      innerHTML: `
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?ce46b44ba8df1fc49eefa51ad16499c5";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+      `
+    }
   ],
 
   presets: [
